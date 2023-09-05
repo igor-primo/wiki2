@@ -1,0 +1,66 @@
+#!/bin/sh
+
+function start()
+{
+	docker rm -f mymediawiki &>/dev/null
+
+	docker volume rm images &>/dev/null
+	docker volume rm skins &>/dev/null
+	docker volume rm extensions &>/dev/null
+
+	docker rm -f mediawiki-hml &>/dev/null
+
+	cat >Dockerfile <<EOF
+FROM mediawiki:latest
+RUN apt update && apt upgrade -y
+RUN apt install -y libldap2-dev
+RUN docker-php-ext-configure ldap --with-libdir=lib/x86_64-linux-gnu
+RUN docker-php-ext-install ldap
+EOF
+
+	docker build -t mediawiki-img .
+
+	declare +i MEDIAWIKI_BASE="/home/igor/repos/mediawiki"
+
+	docker volume create \
+		   --driver local \
+		   --opt type=nfs \
+		   --opt o=addr=127.0.0.1,rw \
+		   --opt device=:$MEDIAWIKI_BASE/images \
+		   images
+
+	docker volume create \
+		   --driver local \
+		   --opt type=nfs \
+		   --opt o=addr=127.0.0.1,rw \
+		   --opt device=:$MEDIAWIKI_BASE/extensions \
+		   extensions
+
+	docker volume create \
+		   --driver local \
+		   --opt type=nfs \
+		   --opt o=addr=127.0.0.1,rw \
+		   --opt device=:$MEDIAWIKI_BASE/skins \
+		   skins
+
+	docker run -d \
+		   --name mediawiki-hml \
+		   --publish 8080:80 \
+		   -v skins:/var/www/html/skins \
+		   -v images:/var/www/html/images \
+		   -v extensions:/var/www/html/extensions \
+		   mediawiki-img
+
+	docker cp $MEDIAWIKI_BASE/LocalSettings.php mediawiki-hml:/var/www/html
+}
+
+function remove()
+{
+	docker rm -f mediawiki-hml
+}
+
+if [ "$1" == "r" ];then
+   remove
+elif [ "$1" == "s" ];then
+	 start
+fi
