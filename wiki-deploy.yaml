@@ -1,0 +1,54 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: wiki-homolog-deploy
+  labels:
+    app: wiki-homolog
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: wiki-homolog
+  template:
+    metadata:
+      labels:
+        app: wiki-homolog
+    spec:
+      imagePullSecrets:
+      - name: registrytrt20
+      containers:
+      - name: wiki-homolog
+        image: registry.trt20.jus.br/igor.primo/wiki:hml
+        imagePullPolicy: Always 
+        livenessProbe:
+          httpGet:
+            path: /
+            port: 80
+          initialDelaySeconds: 600
+          timeoutSeconds: 2 
+        ports:
+        - containerPort: 80
+        volumeMounts:
+        - name: nfs-images
+          mountPath: "/var/www/mediawiki/images"
+        volumeMounts:
+        - name: nfs-skins
+          mountPath: "/var/www/mediawiki/skins"
+        volumeMounts:
+        - name: nfs-extensions
+          mountPath: "/var/www/mediawiki/extensions"
+      volumes:
+      - name: nfs-images
+        nfs:
+          server: 10.20.0.210
+          path: "/dados-hml/wiki/mediawiki/images"
+      volumes:
+      - name: nfs-skins
+        nfs:
+          server: 10.20.0.210
+          path: "/dados-hml/wiki/mediawiki/skins"
+      volumes:
+      - name: nfs-extensions
+        nfs:
+          server: 10.20.0.210
+          path: "/dados-hml/wiki/mediawiki/extensions"

@@ -1,0 +1,61 @@
+stages:
+  - build
+  - deploy
+
+variables:
+  CONTAINER_IMAGE_BUILT: ${CI_REGISTRY_IMAGE}:${CI_COMMIT_REF_NAME}
+
+build:
+  image: docker:latest
+  stage: build
+  services:
+    - docker:dind
+  before_script:
+    - docker login -u ${CI_REGISTRY_USER} -p ${CI_REGISTRY_PASSWORD} ${CI_REGISTRY}
+  script:
+    - docker pull ${CI_REGISTRY_IMAGE}:${CI_DEFAULT_BRANCH} || true
+    - docker pull ${CONTAINER_IMAGE_BUILT} || true
+    - docker build --cache-from ${CI_REGISTRY_IMAGE}:${CI_DEFAULT_BRANCH} --cache-from ${CONTAINER_IMAGE_BUILT} -t ${CONTAINER_IMAGE_BUILT} .
+    - docker push ${CONTAINER_IMAGE_BUILT}
+
+deploy_homolog:
+  stage: deploy
+  only:
+    - tags
+  image: dtzar/helm-kubectl
+  variables:
+    URL: "wiki-homolog.trt20.jus.br"
+  environment:
+    name: homolog
+    url: http://${URL}
+    on_stop: stop_homolog
+    kubernetes:
+      namespace: default
+  script:
+    - echo "Deploy do ${HELM_APP_NAME} em homolog"
+    - kubectl config get-contexts
+    - kubectl config use-context ${HELM_KUBECONTEXT}
+    - kubectl apply -f wiki-deploy.yaml
+    - kubectl apply -f wiki-service.yaml
+    - kubectl apply -f wiki-ingress.yaml
+    - kubectl get deployments.apps ${} -o yaml > ${CI_PROJECT_NAME}-${CI_ENVIRONMENT_NAME}.yaml
+  artifacts:
+    paths:
+      - ${CI_PROJECT_NAME}-${CI_ENVIRONMENT_NAME}.yaml
+
+stop_homolog:
+  stage: deploy
+  only:
+    - tags
+  image: dtzar/helm-kubectl
+  variables:
+    GIT_STRATEGY: none
+  script:
+    - echo "Removendo ${HELM_APP_NAME} da homolog"
+    - helm uninstall ${HELM_APP_NAME}
+  when: manual
+  environment:
+    name: homolog
+    action: stop
+    kubernetes:
+      namespace: default

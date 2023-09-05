@@ -1,0 +1,42 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: wiki-ingress
+  annotations:
+    kubernetes.io/ingress.class: "haproxy"
+    ingress.kubernetes.io/affinity: "cookie"
+    ingress.kubernetes.io/cors-enable: "true"
+    ingress.kubernetes.io/cors-allow-origin: "*"
+    ingress.kubernetes.io/cors-allow-methods: "GET" #, POST, PUT, DELETE, OPTIONS"
+    ingress.kubernetes.io/cors-allow-headers: "Access-Control-Allow-Headers,Origin, X-Requested-With, Content-Type, Accept, Authorization, Access-Control-Allow-Origin, idApp, versao"
+    ingress.kubernetes.io/cors-allow-credentials: "false"
+    ingress.kubernetes.io/ssl-redirect: "true"
+spec:
+  tls:
+  - secretName: cert-wildcard-intra
+    hosts:
+      - wiki-homolog.trt20.intra
+  - secretName: cert-wildcard
+    hosts:
+      - wiki-homolog.trt20.jus.br
+  rules:
+  - host: wiki-homolog.trt20.intra
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: wiki-service
+            port:
+              name: http
+  - host: wiki-homolog.trt20.jus.br
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: wiki-service
+            port:
+              name: http
