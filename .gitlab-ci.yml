@@ -23,7 +23,11 @@ deploy_homolog:
   only:
     - tags
   image: dtzar/helm-kubectl
+  variables:
+    URL: "wiki-homolog.trt20.jus.br"
   environment:
+    name: homolog
+    url: http://${URL}
     on_stop: stop_homolog
     kubernetes:
       namespace: default
