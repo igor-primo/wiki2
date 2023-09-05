@@ -52,6 +52,8 @@ stop_homolog:
     GIT_STRATEGY: none
   script:
     - echo "Removendo ${APP_NAME} da homolog"
+    - kubectl config get-contexts
+    - kubectl config use-context ${HELM_KUBECONTEXT}
     - kubectl delete deployments.app ${DEPLOYMENT_NAME}
     - kubectl delete service ${SERVICE_NAME}
     - kubectl delete ingress ${INGRESS_NAME}
