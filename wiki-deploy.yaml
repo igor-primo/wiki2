@@ -18,7 +18,7 @@ spec:
       - name: registrytrt20
       containers:
       - name: wiki-homolog
-        image: registry.trt20.jus.br/docker/wiki2:0.1.3
+        image: registry.trt20.jus.br/docker/wiki2:latest
         imagePullPolicy: Always 
         livenessProbe:
           httpGet:
