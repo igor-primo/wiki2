@@ -16,6 +16,7 @@ RUN apt update && apt upgrade -y
 RUN apt install -y libldap2-dev
 RUN docker-php-ext-configure ldap --with-libdir=lib/x86_64-linux-gnu
 RUN docker-php-ext-install ldap
+COPY LocalSettings.php /var/www/html
 EOF
 
 	docker build -t mediawiki-img .
@@ -51,7 +52,7 @@ EOF
 		   -v extensions:/var/www/html/extensions \
 		   mediawiki-img
 
-	docker cp $MEDIAWIKI_BASE/LocalSettings.php mediawiki-hml:/var/www/html
+#	docker cp $MEDIAWIKI_BASE/LocalSettings.php mediawiki-hml:/var/www/html
 }
 
 function remove()
