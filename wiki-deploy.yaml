@@ -30,11 +30,11 @@ spec:
         - containerPort: 80
         volumeMounts:
         - name: nfs-images
-          mountPath: "/var/www/mediawiki/images"
+          mountPath: "/var/www/html/images"
         - name: nfs-skins
-          mountPath: "/var/www/mediawiki/skins"
+          mountPath: "/var/www/html/skins"
         - name: nfs-extensions
-          mountPath: "/var/www/mediawiki/extensions"
+          mountPath: "/var/www/html/extensions"
       volumes:
       - name: nfs-images
         nfs:
