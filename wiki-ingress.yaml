@@ -27,7 +27,7 @@ spec:
         pathType: Prefix
         backend:
           service:
-            name: wiki-service
+            name: wiki-homolog-service
             port:
               name: http
   - host: wiki-homolog.trt20.jus.br
@@ -37,6 +37,6 @@ spec:
         pathType: Prefix
         backend:
           service:
-            name: wiki-service
+            name: wiki-homolog-service
             port:
               name: http
