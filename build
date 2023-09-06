@@ -2,45 +2,48 @@
 
 function start()
 {
-	docker rm -f mymediawiki &>/dev/null
-
 	docker volume rm images &>/dev/null
 	docker volume rm skins &>/dev/null
 	docker volume rm extensions &>/dev/null
 
 	docker rm -f mediawiki-hml &>/dev/null
+	docker rmi -f mediawiki-img &>/dev/null
 
 	cat >Dockerfile <<EOF
 FROM mediawiki:latest
 RUN apt update && apt upgrade -y
-RUN apt install -y libldap2-dev
+RUN apt install -y libldap2-dev tar
 RUN docker-php-ext-configure ldap --with-libdir=lib/x86_64-linux-gnu
 RUN docker-php-ext-install ldap
-COPY LocalSettings.php /var/www/html
+WORKDIR /
+COPY . .
+RUN tar xzf mediawiki-extensions-LDAPAuthentication2-2.0.0.tar.gz -C /var/www/html/extensions
+RUN tar xzf mediawiki-extensions-LDAPProvider-2.0.0.tar.gz -C /var/www/html/extensions
+RUN tar xzf MobileFrontend-REL1_40-6d77c0b.tar.gz -C /var/www/html/extensions
+RUN tar xzf PluggableAuth-REL1_40-764e1ec.tar.gz -C /var/www/html/extensions
+WORKDIR /var/www/html/extensions
+RUN mv mediawiki-extensions-LDAPAuthentication2-2.0.0 LDAPAuthentication2
+RUN mv mediawiki-extensions-LDAPProvider-2.0.0 LDAPProvider
+COPY /LocalSettings.php /var/www/html
 EOF
 
-	docker build -t mediawiki-img . &>/dev/null
+	docker build -t mediawiki-img .
 
-	declare +i mediawiki_base="/dados-hml/wiki/mediawiki"
+	# declare +i mediawiki_base="/dados-hml/wiki/mediawiki"
+
+	declare +i mediawiki_base="/home/igor/repos/mediawiki"
 
 	docker volume create \
 		   --driver local \
 		   --opt type=nfs \
-		   --opt o=addr=10.20.0.210,rw \
+		   --opt o=addr=localhost,rw \
 		   --opt device=:$mediawiki_base/images \
 		   images
 
 	docker volume create \
 		   --driver local \
 		   --opt type=nfs \
-		   --opt o=addr=10.20.0.210,rw \
-		   --opt device=:$mediawiki_base/extensions \
-		   extensions
-
-	docker volume create \
-		   --driver local \
-		   --opt type=nfs \
-		   --opt o=addr=10.20.0.210,rw \
+		   --opt o=addr=localhost,rw \
 		   --opt device=:$mediawiki_base/skins \
 		   skins
 
@@ -49,7 +52,6 @@ EOF
 		   --publish 8080:80 \
 		   -v skins:/var/www/html/skins \
 		   -v images:/var/www/html/images \
-		   -v extensions:/var/www/html/extensions \
 		   mediawiki-img
 
 #	docker cp $mediawiki_base/LocalSettings.php mediawiki-hml:/var/www/html

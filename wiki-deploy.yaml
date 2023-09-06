@@ -33,8 +33,6 @@ spec:
           mountPath: "/var/www/html/images"
         - name: nfs-skins
           mountPath: "/var/www/html/skins"
-        - name: nfs-extensions
-          mountPath: "/var/www/html/extensions"
       volumes:
       - name: nfs-images
         nfs:
@@ -44,7 +42,3 @@ spec:
         nfs:
           server: 10.20.0.210
           path: "/dados-hml/wiki/mediawiki/skins"
-      - name: nfs-extensions
-        nfs:
-          server: 10.20.0.210
-          path: "/dados-hml/wiki/mediawiki/extensions"
