@@ -2,7 +2,6 @@ stages:
   - build
   - deploy
 
-registry.trt20.jus.br/docker/wiki2:latest
 variables:
   CONTAINER_IMAGE_BUILT: ${CI_REGISTRY_IMAGE}:${CI_COMMIT_REF_NAME}
   WIKI_URL: wiki-homolog.trt20.jus.br
