@@ -1,24 +1,29 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: wiki-homolog-deploy
+  name: {{ .Release.Name }}
   labels:
-    app: wiki-homolog
+    app: {{ .Release.Name }}-deploy
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: wiki-homolog
+      app: {{ .Release.Name }}
   template:
     metadata:
       labels:
-        app: wiki-homolog
+        app: {{ .Release.Name }}
     spec:
       imagePullSecrets:
       - name: registrytrt20
       containers:
-      - name: wiki-homolog
-        image: registry.trt20.jus.br/docker/wiki2:latest
+      - name: {{ .Release.Name }}
+    spec:
+      imagePullSecrets:
+      - name: registrytrt20
+      containers:
+      - name: {{ .Release.Name }}
+        image: {{ .Values.image }}
         imagePullPolicy: Always 
         livenessProbe:
           httpGet:
@@ -29,16 +34,10 @@ spec:
         ports:
         - containerPort: 80
         volumeMounts:
-        - name: nfs-images
+        - name: {{ .Release.Name }}-nfs
           mountPath: "/var/www/html/images"
-        - name: nfs-skins
-          mountPath: "/var/www/html/skins"
       volumes:
-      - name: nfs-images
+      - name: {{ .Release.Name }}-nfs
         nfs:
-          server: 10.20.0.210
-          path: "/dados-hml/wiki/mediawiki/images"
-      - name: nfs-skins
-        nfs:
-          server: 10.20.0.210
-          path: "/dados-hml/wiki/mediawiki/skins"
+          server: {{ .Values.config.volume.server }}
+          path: {{ .Values.config.volume.path }}/images

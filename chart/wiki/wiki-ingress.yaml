@@ -1,7 +1,7 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: wiki-homolog-ingress
+  name: {{ .Release.Name }}-ingress
   annotations:
     kubernetes.io/ingress.class: "haproxy"
     ingress.kubernetes.io/affinity: "cookie"
@@ -15,28 +15,28 @@ spec:
   tls:
   - secretName: cert-wildcard-intra
     hosts:
-      - wiki-homolog.trt20.intra
+      - {{ .Values.url_intra }}
   - secretName: cert-wildcard
     hosts:
-      - wiki-homolog.trt20.jus.br
+      - {{ .Values.url }}
   rules:
-  - host: wiki-homolog.trt20.intra
+  - host: {{ .Values.url_intra }}
     http:
       paths:
       - path: /
         pathType: Prefix
         backend:
           service:
-            name: wiki-homolog-service
+            name: {{ .Release.Name }}-service
             port:
               name: http
-  - host: wiki-homolog.trt20.jus.br
+  - host: {{ .Values.url }}
     http:
       paths:
       - path: /
         pathType: Prefix
         backend:
           service:
-            name: wiki-homolog-service
+            name: {{ .Release.Name }}-service
             port:
               name: http
