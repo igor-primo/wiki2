@@ -46,7 +46,7 @@ deploy_homolog:
         --set url_intra=$WIKI_INTRA
         --set config.volume.server="10.20.0.210"
         --set config.volume.path="/dados-hml/wiki/mediawiki"
-    - helm get manifest ${HELM_APP_NAME_UPLOAD} > ${CI_PROJECT_NAME}-${CI_ENVIRONMENT_NAME}.yaml
+    - helm get manifest ${APP_NAME} > ${CI_PROJECT_NAME}-${CI_ENVIRONMENT_NAME}.yaml
   artifacts:
     paths:
       - ${CI_PROJECT_NAME}-${CI_ENVIRONMENT_NAME}.yaml
