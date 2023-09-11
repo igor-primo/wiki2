@@ -41,7 +41,7 @@ deploy_homolog:
         --install
         --set gitlab.app=$CI_PROJECT_PATH_SLUG
         --set gitlab.env=$CI_ENVIRONMENT_SLUG
-        --set image=$CONTAINER_IMAGE_UPLOAD_BUILT
+        --set image=$CONTAINER_IMAGE_BUILT
         --set url=$WIKI_URL
         --set url_intra=$WIKI_INTRA
         --set config.volume.server="10.20.0.210"
