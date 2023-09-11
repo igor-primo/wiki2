@@ -4,8 +4,6 @@ stages:
 
 variables:
   CONTAINER_IMAGE_BUILT: ${CI_REGISTRY_IMAGE}:${CI_COMMIT_REF_NAME}
-  WIKI_URL: wiki-homolog.trt20.jus.br
-  WIKI_INTRA: wiki-homolog.trt20.intra
 
 build:
   image: docker:latest
@@ -31,7 +29,8 @@ deploy_homolog:
     URL: "wiki-homolog.trt20.jus.br"
   environment:
     name: homolog
-    url: http://${URL}
+    url: https://wiki-homolog.trt20.jus.br
+    url_intra: https://wiki-homolog.trt20.intra
     on_stop: stop_homolog
     kubernetes:
       namespace: default
@@ -42,8 +41,8 @@ deploy_homolog:
         --set gitlab.app=$CI_PROJECT_PATH_SLUG
         --set gitlab.env=$CI_ENVIRONMENT_SLUG
         --set image=$CONTAINER_IMAGE_BUILT
-        --set url=$WIKI_URL
-        --set url_intra=$WIKI_INTRA
+        --set url=$url
+        --set url_intra=$url_intra
         --set config.volume.server="10.20.0.210"
         --set config.volume.path="/dados-hml/wiki/mediawiki"
     - helm get manifest ${APP_NAME} > ${CI_PROJECT_NAME}-${CI_ENVIRONMENT_NAME}.yaml
