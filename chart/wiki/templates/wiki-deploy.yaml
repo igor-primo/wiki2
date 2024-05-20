@@ -38,6 +38,6 @@ spec:
           mountPath: "/var/www/html/images"
       volumes:
       - name: {{ .Release.Name }}-nfs
-        nfs:
-          server: {{ .Values.config.volume.server }}
-          path: {{ .Values.config.volume.path }}/images
+        persistentVolumeClaim:
+          claimName: {{ .Values.config.volumes.wiki.pvc }}
+

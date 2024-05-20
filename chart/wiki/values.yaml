@@ -1,0 +1,5 @@
+config:
+  volumes:
+    wiki:
+      pvc: "wiki-hml"
+
