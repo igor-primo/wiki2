@@ -1,2 +1,68 @@
 #+TITLE: Wiki
+
 Novo deploy para a Wiki. 
+
+* Arquitetura do projeto
+
+Nesse projeto existem as seguintes coisas:
+
+1) Um arquivo Dockerfile para gerar uma imagem da Mediawiki.
+2) Um arquivo .gitlab-ci.yml para configurar uma carga de trabalho
+   de Integração Contínua.
+3) Pacotes releases de plugins para o Mediawiki.
+4) Arquivos template de configuração de deploy, service e ingress
+   para configuração do software no Kubernetes.
+
+** Construção da imagem
+
+A construção da imagem customizada da Mediawiki tem como partida a versão mais
+recente da Mediawiki na época da atualização da Wiki (1.40, de Outubro de 2023).
+
+A receita Dockerfile utiliza um script para construir localmente (na imagem)
+software para realização de tarefas LDAP. Além disso, o mesmo arquivo Dockerfile
+instala manualmente na imagem um número de dependências requeridas pelo uso do
+Tribunal.
+São elas:
+
+- mediawiki-extensions-LDAPAuthentication2-2.0.0.tar.gz
+- mediawiki-extensions-LDAPProvider-2.0.0.tar.gz
+- MobileFrontend-REL1_40-6d77c0b.tar.gz
+- PluggableAuth-REL1_40-764e1ec.tar.gz
+- Foreground-REL1_40-cd870ce.tar.gz
+- Vector-REL1_40-31f26e6.tar.gz
+
+Existe incompatibilidade entre a versão de alguns desses pacotes e a versão
+mais recente da Mediawiki na data do atual commit.
+
+** Configuração do deploy no Kubernetes
+
+O arquivo que configura a pipeline CI no Gitlab é o .gitlab-ci.yml.
+Os jobs são:
+
+- *build*: constrói a imagem customizada da Mediawiki a partir do Dockerfile
+  nesse repositório e copia a imagem para o repositório de imagens Docker do Tribunal.
+- *deploy_homolog*: invoca *helm* para construir o artefato desejado, que é o
+  yaml para configuração do software no Kubernetes. Também instala a aplicação no Kubernetes.
+- *stop_homolog*: invoca *helm* para desinstalar a aplicação do Kubernetes.
+
+*** Nota importante sobre implementação da Mediawiki
+
+O projeto Mediawiki armazena binários, como imagens, vídeos, etc., utilizados
+pelas páginas da wiki em um sistema de arquivos e o caminho para esses artefatos
+é armazenado em uma tabela no banco de dados da aplicação.
+
+O sistema de arquivos para armazenamento dos binários fica em um servidor NFS, que é
+representado por um PV (Persistent Volume) no Kubernetes.
+O arquivo template de deploy especifica um PVC (Persistent Volume Claim) para utilizar
+o NFS. Esse arquivo está no caminho ./chart/wiki/templates/wiki-deploy.yaml.
+
+O *caminho e credenciais* (e outras informações mais ou menos importantes) para
+acesso ao banco de dados fica em um snippet php chamado
+'LocalSettings.php' que é copiado para imagem customizada na ocasião de sua criação.
+
+Após cada atualização do Mediawiki é necessário verificar se o esquema de banco
+de dados precisa de alguma atualização. Essa atualização pode ser feita pela interface
+Web ou através da execução do script php que fica no caminho
+/var/www/html/maintenance/update.php. Instruções para como realizar
+a atualização está na documentação do Mediawiki:
+https://www.mediawiki.org/wiki/Manual:Update.php/pt-br
