@@ -16,7 +16,7 @@ Nesse projeto existem as seguintes coisas:
 ** Construção da imagem
 
 A construção da imagem customizada da Mediawiki tem como partida a versão mais
-recente da Mediawiki na época da atualização da Wiki (1.40, de Outubro de 2023).
+recente da Mediawiki na época da atualização da Wiki (v1.40, de Outubro de 2023).
 
 A receita Dockerfile utiliza um script para construir localmente (na imagem)
 software para realização de tarefas LDAP. Além disso, o mesmo arquivo Dockerfile
@@ -64,5 +64,4 @@ Após cada atualização do Mediawiki é necessário verificar se o esquema de b
 de dados precisa de alguma atualização. Essa atualização pode ser feita pela interface
 Web ou através da execução do script php que fica no caminho
 /var/www/html/maintenance/update.php. Instruções para como realizar
-a atualização está na documentação do Mediawiki:
-https://www.mediawiki.org/wiki/Manual:Update.php/pt-br
+a atualização está na [[https://www.mediawiki.org/wiki/Manual:Update.php/pt-br][documentação]] da Mediawiki.
