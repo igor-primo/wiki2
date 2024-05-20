@@ -1,4 +1,4 @@
-FROM mediawiki:latest
+FROM mediawiki:1.40
 RUN apt update && apt upgrade -y
 RUN apt install -y libldap2-dev tar
 RUN docker-php-ext-configure ldap --with-libdir=lib/x86_64-linux-gnu
