@@ -71,3 +71,51 @@ stop_homolog:
     action: stop
     kubernetes:
       namespace: default
+
+deploy_prod:
+  stage: deploy
+  only:
+    - tags
+  image: dtzar/helm-kubectl
+  variables:
+    URL: "wiki.trt20.jus.br"
+  environment:
+    name: prod
+    url: http://${URL}
+    on_stop: stop_prod
+    kubernetes:
+      namespace: default
+  script:
+    - echo "Deploy do ${APP_NAME} em prod"
+    - helm upgrade ${APP_NAME} chart/wiki
+        --install
+        --set gitlab.app=$CI_PROJECT_PATH_SLUG
+        --set gitlab.env=$CI_ENVIRONMENT_SLUG
+        --set image=$CONTAINER_IMAGE_BUILT
+        --set url=$WIKI_URL
+        --set url_intra=$WIKI_INTRA
+        --set config.db.server=$DB_SERVER
+        --set config.db.name=$DB_NAME
+        --set config.db.user=$DB_USER
+        --set config.db.password=$DB_PASSWORD
+    - helm get manifest ${APP_NAME} > ${CI_PROJECT_NAME}-${CI_ENVIRONMENT_NAME}.yaml
+  artifacts:
+    paths:
+      - ${CI_PROJECT_NAME}-${CI_ENVIRONMENT_NAME}.yaml
+
+stop_prod:
+  stage: deploy
+  only:
+    - tags
+  image: dtzar/helm-kubectl
+  variables:
+    GIT_STRATEGY: none
+  script:
+    - echo "Removendo ${APP_NAME} de prod"
+    - helm uninstall ${APP_NAME}
+  when: manual
+  environment:
+    name: prod
+    action: stop
+    kubernetes:
+      namespace: default
