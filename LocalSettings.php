@@ -57,7 +57,7 @@ $wgEnotifWatchlist     = false; # UPO
 $wgEmailAuthentication = true;
 
 ## Database settings
-$wgDBtype           = getenv('DB_TYPE');
+$wgDBtype           = "mysql";
 $wgDBserver         = getenv('DB_SERVER');
 $wgDBname           = getenv('DB_NAME');
 $wgDBuser           = getenv('DB_USER');

@@ -2,4 +2,8 @@ config:
   volumes:
     wiki:
       pvc: "wiki-hml"
-
+  db:
+    server: ""
+    name: ""
+    user: ""
+    password: ""

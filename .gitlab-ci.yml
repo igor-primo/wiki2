@@ -46,6 +46,10 @@ deploy_homolog:
         --set image=$CONTAINER_IMAGE_BUILT
         --set url=$WIKI_URL_HOMOLOG
         --set url_intra=$WIKI_INTRA_HOMOLOG
+        --set config.db.server=$DB_SERVER
+        --set config.db.name=$DB_NAME
+        --set config.db.user=$DB_USER
+        --set config.db.password=$DB_PASSWORD
     - helm get manifest ${APP_NAME} > ${CI_PROJECT_NAME}-${CI_ENVIRONMENT_NAME}.yaml
   artifacts:
     paths:
