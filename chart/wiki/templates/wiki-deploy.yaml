@@ -36,6 +36,17 @@ spec:
         volumeMounts:
         - name: {{ .Release.Name }}-nfs
           mountPath: "/var/www/html/images"
+        env:
+        - name: DB_TYPE
+          value: "mysql"
+        - name: DB_SERVER
+          value: "10.20.0.163"
+        - name: DB_NAME
+          value: "mediawiki_homolog"
+        - name: DB_USER
+          value: "root"
+        - name: DB_PASSWORD
+          value: "12mudar34"
       volumes:
       - name: {{ .Release.Name }}-nfs
         persistentVolumeClaim:
