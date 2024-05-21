@@ -186,8 +186,8 @@ $LDAPProviderDomainConfigProvider = function() {
 		'Active Directory' => [
 			'connection' => [
 				"server" => "adserver01.trt20.intra",
-				"user" => "CN=Sistema Wiki,OU=Sistemas,DC=trt20,DC=intra",
-				"pass" => 'b7790qKu',
+				"user" => getenv('AD_USER'),
+				"pass" => getenv('AD_PASS'),
 				"options" => [
 					"LDAP_OPT_DEREF" => 1
 				],

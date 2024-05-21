@@ -50,6 +50,8 @@ deploy_homolog:
         --set config.db.name=$DB_NAME
         --set config.db.user=$DB_USER
         --set config.db.password=$DB_PASSWORD
+        --set config.ad.user=$AD_USER
+        --set config.ad.pass=$AD_PASS
     - helm get manifest ${APP_NAME} > ${CI_PROJECT_NAME}-${CI_ENVIRONMENT_NAME}.yaml
   artifacts:
     paths:
@@ -98,6 +100,8 @@ deploy_prod:
         --set config.db.name=$DB_NAME
         --set config.db.user=$DB_USER
         --set config.db.password=$DB_PASSWORD
+        --set config.ad.user=$AD_USER
+        --set config.ad.pass=$AD_PASS
     - helm get manifest ${APP_NAME} > ${CI_PROJECT_NAME}-${CI_ENVIRONMENT_NAME}.yaml
   artifacts:
     paths:
