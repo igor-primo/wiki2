@@ -186,8 +186,8 @@ $LDAPProviderDomainConfigProvider = function() {
 		'Active Directory' => [
 			'connection' => [
 				"server" => "adserver01.trt20.intra",
-				"user" => getenv('AD_USER'),
-				"pass" => getenv('AD_PASS'),
+				"user" => "",
+				"pass" => "",
 				"options" => [
 					"LDAP_OPT_DEREF" => 1
 				],
@@ -203,6 +203,8 @@ $LDAPProviderDomainConfigProvider = function() {
 			]
 		]
 	];
+    $config['Active Directory']['connection']['user'] = getenv('AD_USER');
+    $config['Active Directory']['connection']['pass'] = getenv('AD_PASS');
 	return new \MediaWiki\Extension\LDAPProvider\DomainConfigProvider\InlinePHPArray($config);
 };
 
