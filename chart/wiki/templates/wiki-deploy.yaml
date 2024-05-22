@@ -45,6 +45,10 @@ spec:
           value: {{ .Values.config.db.user }}
         - name: DB_PASSWORD
           value: {{ .Values.config.db.password }}
+        - name: AD_USER
+          value: {{ .Values.config.ad.user }}
+        - name: AD_PASS
+          value: {{ .Values.config.ad.pass }}
       volumes:
       - name: {{ .Release.Name }}-nfs
         persistentVolumeClaim:
