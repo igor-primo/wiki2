@@ -15,3 +15,4 @@ WORKDIR /var/www/html/extensions
 RUN mv mediawiki-extensions-LDAPAuthentication2-2.0.0 LDAPAuthentication2
 RUN mv mediawiki-extensions-LDAPProvider-2.0.0 LDAPProvider
 COPY /LocalSettings.php /var/www/html
+WORKDIR /var/www/html
